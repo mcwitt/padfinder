@@ -107,7 +107,7 @@ def update_commutes(destinations,
 @click.command()
 @click.option('--destination', multiple=True, required=True)
 @click.option('--transit-mode', multiple=True, default=['driving', 'transit'])
-@click.option('--depart-time', default="13 March 2017 7:30 AM")
+@click.option('--depart-time', default="1 January 2018 7:30 AM")
 @click.option('--batch-size', default=20)
 @click.option('--download-delay', default=5)
 def main(destination, transit_mode, depart_time, batch_size, download_delay):
