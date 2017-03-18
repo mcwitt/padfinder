@@ -1,6 +1,7 @@
-import scrapy
-from scrapy.loader.processors import MapCompose
 import datetime as dt
+import scrapy
+from scrapy.exceptions import CloseSpider
+from scrapy.loader.processors import MapCompose
 from padcrawler.items import ApartmentPost
 from padcrawler.loaders import ApartmentPostLoader
 from padcrawler.settings import MAX_POST_AGE_DAYS
@@ -12,13 +13,8 @@ class CraigSpider(scrapy.Spider):
     allowed_domains = ["craigslist.org"]
 
     def __init__(self, region='sfbay', subregion='eby'):
-        self.start_urls = [f'http://{region}.craigslist.org/search/{subregion}/apa']
-
-    def start_requests(self):
-        region = getattr(self, 'region', 'sfbay')
-        subregion = getattr(self, 'subregion', 'eby')
-        url = f'http://{region}.craigslist.org/search/{subregion}/apa'
-        yield scrapy.Request(url, self.parse)
+        self.start_urls = [
+            'http://{}.craigslist.org/search/{}/apa'.format(region, subregion)]
 
     def parse(self, response):
         posts = response.xpath('//li[@class="result-row"]')
@@ -41,8 +37,8 @@ class CraigSpider(scrapy.Spider):
 
             # stop if we've reached posts older than the cutoff
             if (dt.datetime.now() - posted_ts).days > MAX_POST_AGE_DAYS:
-                raise CloseSpider(
-                    f'reached post age cutoff ({MAX_POST_AGE_DAYS} days)')
+                raise CloseSpider('reached post age cutoff ({} days)'
+                                  .format(MAX_POST_AGE_DAYS))
 
             # fill in remaining fields from the post detail page
             detail_url = response.urljoin(post['url'])
@@ -87,6 +83,6 @@ class CraigSpider(scrapy.Spider):
             'loft'
             'townhouse'
         ]:
-            l.add_xpath('tag_list', f'//text()[.="{tag}"]')
+            l.add_xpath('tag_list', '//text()[.="{}"]'.format(tag))
 
         return l.load_item()
