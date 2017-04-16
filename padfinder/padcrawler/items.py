@@ -6,6 +6,7 @@ class ApartmentPost(Item):
     id = Field()
     repost_of = Field()
     posted_ts = Field()
+    snapshot_ts = Field()
     url = Field()
     title = Field()
     price = Field()

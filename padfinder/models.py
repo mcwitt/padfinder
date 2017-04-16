@@ -25,6 +25,7 @@ class ApartmentPost(Base):
 
     id = Column(BigInteger, primary_key=True)
     repost_of = Column(BigInteger)
+    snapshot_ts = Column(DateTime)
     posted_ts = Column(DateTime)
     url = Column(String)
     title = Column(String)
