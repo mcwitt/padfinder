@@ -21,6 +21,7 @@ class CraigSpider(scrapy.Spider):
         for post in posts:
             l = ApartmentPostLoader(ApartmentPost(), post)
 
+            l.add_value('scraped_ts', dt.datetime.now().isoformat())
             l.add_xpath('id', './@data-pid')
             l.add_xpath('repost_of', './@data-repost-of')
             l.add_xpath('posted_ts', './/time/@datetime')
