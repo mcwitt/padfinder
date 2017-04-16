@@ -13,6 +13,8 @@ class CraigSpider(scrapy.Spider):
     allowed_domains = ["craigslist.org"]
 
     def __init__(self, region='sfbay', subregion='eby'):
+        self.region = region
+        self.subregion = subregion
         self.start_urls = [
             'http://{}.craigslist.org/search/{}/apa'.format(region, subregion)]
 
@@ -21,7 +23,10 @@ class CraigSpider(scrapy.Spider):
         for post in posts:
             l = ApartmentPostLoader(ApartmentPost(), post)
 
+            l.add_value('region', self.region)
+            l.add_value('subregion', self.subregion)
             l.add_value('snapshot_ts', dt.datetime.now().isoformat())
+
             l.add_xpath('id', './@data-pid')
             l.add_xpath('repost_of', './@data-repost-of')
             l.add_xpath('posted_ts', './/time/@datetime')

@@ -7,6 +7,8 @@ class ApartmentPost(Item):
     repost_of = Field()
     posted_ts = Field()
     snapshot_ts = Field()
+    region = Field()
+    subregion = Field()
     url = Field()
     title = Field()
     price = Field()

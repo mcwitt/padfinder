@@ -28,6 +28,8 @@ class ApartmentPost(Base):
     snapshot_ts = Column(DateTime)
     posted_ts = Column(DateTime)
     url = Column(String)
+    region = Column(String)
+    subregion = Column(String)
     title = Column(String)
     price = Column(Integer)
     bedrooms = Column(Integer)
