@@ -9,7 +9,8 @@ NEWSPIDER_MODULE = 'padcrawler.spiders'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
-DOWNLOAD_DELAY = 5
+DOWNLOAD_DELAY = 15
+RANDOMIZE_DOWNLOAD_DELAY = True
 
 DOWNLOADER_MIDDLEWARES = {
     'padcrawler.middlewares.IgnoreDuplicatesMiddleware': 543,
@@ -18,12 +19,6 @@ DOWNLOADER_MIDDLEWARES = {
 ITEM_PIPELINES = {
     'padcrawler.pipelines.SQLStorePipeline': 300,
 }
-
-AUTOTHROTTLE_ENABLED = True
-AUTOTHROTTLE_START_DELAY = 5
-AUTOTHROTTLE_MAX_DELAY = 60
-AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
-AUTOTHROTTLE_DEBUG = False
 
 
 # padcrawler settings
