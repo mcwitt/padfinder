@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 mkdir /etc/padfinder/
 echo $1 > /etc/padfinder/subregion
 

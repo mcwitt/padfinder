@@ -29,5 +29,5 @@ ENV LANG en_US.utf-8
 ENV LC_ALL en_US.utf-8
 
 WORKDIR /code/padfinder/padfinder
-ENTRYPOINT ./start.sh
-CMD sfc
+ENTRYPOINT ["./start.sh"]
+CMD ["sfc"]
