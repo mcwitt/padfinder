@@ -14,19 +14,20 @@ ENV PATH /usr/local/bin:$PATH
 
 RUN pip-3.5 install --upgrade pip
 
-COPY padfinder /etc/init.d/
+COPY etc/init.d/ /etc/init.d/
 
 WORKDIR /code
 RUN git clone https://github.com/mcwitt/padfinder.git
+COPY padfinder/ /code/padfinder/
 
 WORKDIR /code/padfinder/
-COPY requirements.txt ./
+RUN git checkout tags/v0.1
 RUN pip install -r requirements.txt
-
-WORKDIR /code/padfinder/padfinder
-COPY run.sh secret.py settings.py ./
 
 # needed for click to work
 ENV LANG en_US.utf-8
 ENV LC_ALL en_US.utf-8
 
+WORKDIR /code/padfinder/padfinder
+ENTRYPOINT ./start.sh
+CMD sfc
