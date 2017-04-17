@@ -3,7 +3,6 @@ import googlemaps
 import itertools
 import logging
 from random import random
-from sqlalchemy import not_
 from sqlalchemy.orm import sessionmaker
 import time
 
@@ -15,12 +14,14 @@ from models import (
     TransitMode,
     DepartureTime
 )
-from secret import API_KEY
+from secret import GOOGLE_MAPS_API_KEY
+
+DEFAULT_TRANSIT_MODE = ['transit', 'driving', 'bicycling']
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-G = googlemaps.Client(key=API_KEY)
+G = googlemaps.Client(key=GOOGLE_MAPS_API_KEY)
 
 
 def _random_pause(scale):
@@ -41,7 +42,7 @@ def _grouper(seq, n):
 def _process_batch(session, posts, destinations, modes, depart_time):
     """Request commute distances and durations for a batch of posts"""
 
-    origins = [(_.latitude, _.longitude) for _ in posts]
+    origins = [(p.latitude, p.longitude) for p in posts]
     depart_ts = time.mktime(depart_time.timetuple())
     depart_time = get_or_create(session,
                                 DepartureTime,
@@ -49,7 +50,7 @@ def _process_batch(session, posts, destinations, modes, depart_time):
 
     for mode_name in modes:
         response = G.distance_matrix(origins,
-                                     destinations,
+                                     list(destinations),
                                      mode=mode_name,
                                      departure_time=depart_ts)
 
@@ -85,17 +86,30 @@ def update_commutes(destinations,
     Session = sessionmaker(bind=engine)
 
     with session_scope(Session) as session:
-        query = (
-            session
-            .query(ApartmentPost)
-            .outerjoin(ApartmentPost.commutes)
-            .filter(not_(ApartmentPost.commutes.any()))
-            .filter(ApartmentPost.latitude != None))
 
-        num_updates = query.count()
+        # get posts with location information
+        posts = (session
+                 .query(ApartmentPost)
+                 .outerjoin(ApartmentPost.commutes)
+                 .filter(ApartmentPost.latitude is not None))
+
+        # query distance matrix API for posts that are missing commute
+        # destinations, transit modes, or specified departure time
+
+        def is_complete(post):
+            has_dests = set(destinations).issubset([
+                c.destination.name for c in post.commutes])
+            has_modes = set(modes).issubset([
+                c.transit_mode.name for c in post.commutes])
+            has_depart_time = depart_time in [
+                c.depart_time.ts for c in post.commutes]
+            return has_dests and has_modes and has_depart_time
+
+        posts_to_update = [p for p in posts if not is_complete(p)]
+        num_updates = len(posts_to_update)
         num_processed = 0
 
-        for posts in _grouper(iter(query), batch_size):
+        for posts in _grouper(iter(posts_to_update), batch_size):
             _process_batch(session, posts, destinations, modes, depart_time)
             num_processed += len(posts)
             logger.info("{}/{} commutes processed"
@@ -105,7 +119,7 @@ def update_commutes(destinations,
 
 @click.command()
 @click.option('--destination', multiple=True, required=True)
-@click.option('--transit-mode', multiple=True, default=['driving', 'transit'])
+@click.option('--transit-mode', multiple=True, default=DEFAULT_TRANSIT_MODE)
 @click.option('--depart-time', default="1 January 2018 7:30 AM")
 @click.option('--batch-size', default=20)
 @click.option('--download-delay', default=5)
@@ -114,7 +128,7 @@ def main(destination, transit_mode, depart_time, batch_size, download_delay):
 
     depart_time = parse(depart_time)
 
-    update_commutes(list(destination),
+    update_commutes(destination,
                     transit_mode,
                     depart_time,
                     batch_size,
