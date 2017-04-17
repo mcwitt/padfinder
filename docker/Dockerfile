@@ -10,11 +10,10 @@ RUN yum install -y \
         python35-pip
 
 RUN mkdir -p /usr/local/bin && ln -s /usr/bin/python3 /usr/local/bin/python
-ENV PATH /usr/local/bin:$PATH
-
 RUN pip-3.5 install --upgrade pip
 
 COPY etc/init.d/ /etc/init.d/
+COPY etc/profile.d/ /etc/profile.d/
 
 WORKDIR /code
 RUN git clone https://github.com/mcwitt/padfinder.git
