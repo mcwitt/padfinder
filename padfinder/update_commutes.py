@@ -89,7 +89,7 @@ def update_commutes(destinations,
         posts = (session
                  .query(ApartmentPost)
                  .outerjoin(ApartmentPost.commutes)
-                 .filter(ApartmentPost.latitude is not None))
+                 .filter(ApartmentPost.latitude != None))
 
         # query distance matrix API for posts that are missing commute
         # destinations, transit modes, or specified departure time
