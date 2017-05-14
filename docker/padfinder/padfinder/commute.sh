@@ -5,6 +5,7 @@ while true; do
         --destination "120 Kearny St, San Francisco, USA" \
         --destination "Mission Cliffs, San Francisco, USA" \
         --destination "Dogpatch Boulders, San Francisco, USA" \
-        --destination "California Academy of Sciences, San Francisco, USA"
+        --destination "California Academy of Sciences, San Francisco, USA" \
+        --download-delay 30
     sleep 900
 done
