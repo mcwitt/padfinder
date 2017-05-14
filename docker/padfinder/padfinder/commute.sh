@@ -2,10 +2,12 @@
 
 while true; do
     python update_commutes.py \
-        --destination "120 Kearny St, San Francisco, USA" \
-        --destination "Mission Cliffs, San Francisco, USA" \
-        --destination "Dogpatch Boulders, San Francisco, USA" \
-        --destination "California Academy of Sciences, San Francisco, USA" \
-        --download-delay 30
+           --destination "Mission Cliffs, San Francisco, USA" \
+           --destination "California Academy of Sciences, San Francisco, USA" \
+           --transit-mode walking \
+           --transit-mode bicycling \
+           --transit-mode transit \
+	         --transit-mode driving \
+           --download-delay 10
     sleep 900
 done

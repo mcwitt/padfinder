@@ -16,8 +16,6 @@ from models import (
 )
 from secret import GOOGLE_MAPS_API_KEY
 
-DEFAULT_TRANSIT_MODE = ['transit', 'driving', 'bicycling']
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -119,7 +117,7 @@ def update_commutes(destinations,
 
 @click.command()
 @click.option('--destination', multiple=True, required=True)
-@click.option('--transit-mode', multiple=True, default=DEFAULT_TRANSIT_MODE)
+@click.option('--transit-mode', multiple=True, required=True)
 @click.option('--depart-time', default="1 January 2018 7:30 AM")
 @click.option('--batch-size', default=20)
 @click.option('--download-delay', default=5)
