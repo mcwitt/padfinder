@@ -73,8 +73,9 @@ def _process_batch(session, posts, destinations, modes, depart_time):
 def update_commutes(destinations,
                     modes,
                     depart_time,
-                    batch_size=50,
-                    delay=5):
+                    batch_size,
+                    download_delay,
+                    max_batches):
     """
     Look up commute distances and times from Google Maps API for posts in the
     database that have lat/lon but are missing commute information.
@@ -86,33 +87,24 @@ def update_commutes(destinations,
     with session_scope(Session) as session:
 
         # get posts with location information
-        posts = (session
-                 .query(ApartmentPost)
-                 .outerjoin(ApartmentPost.commutes)
-                 .filter(ApartmentPost.latitude != None))
+        posts_to_update = (session
+                           .query(ApartmentPost)
+                           .outerjoin(ApartmentPost.commutes)
+                           .filter(ApartmentPost.latitude != None,
+                                   ~ApartmentPost.commutes.any()))
 
-        # query distance matrix API for posts that are missing commute
-        # destinations, transit modes, or specified departure time
-
-        def is_complete(post):
-            has_dests = set(destinations).issubset([
-                c.destination.name for c in post.commutes])
-            has_modes = set(modes).issubset([
-                c.transit_mode.name for c in post.commutes])
-            has_depart_time = depart_time in [
-                c.depart_time.ts for c in post.commutes]
-            return has_dests and has_modes and has_depart_time
-
-        posts_to_update = [p for p in posts if not is_complete(p)]
-        num_updates = len(posts_to_update)
+        num_updates = posts_to_update.count()
         num_processed = 0
 
-        for posts in _grouper(iter(posts_to_update), batch_size):
+        for i, posts in enumerate(_grouper(posts_to_update, batch_size), 1):
             _process_batch(session, posts, destinations, modes, depart_time)
             num_processed += len(posts)
-            logger.info("{}/{} commutes processed"
-                        .format(num_processed, num_updates))
-            _random_pause(delay)
+            logger.info("batch {}: {}/{} commutes processed"
+                        .format(i, num_processed, num_updates))
+            if i == max_batches:
+                logger.warn('reached max_batches=={}; stopping'.format(max_batches))
+                break
+            _random_pause(download_delay)
 
 
 @click.command()
@@ -121,16 +113,14 @@ def update_commutes(destinations,
 @click.option('--depart-time', default="1 January 2018 7:30 AM")
 @click.option('--batch-size', default=20)
 @click.option('--download-delay', default=5)
-def main(destination, transit_mode, depart_time, batch_size, download_delay):
+@click.option('--max-batches', default=9999)
+def main(destination, transit_mode, depart_time, **kwargs):
     from dateutil.parser import parse
-
     depart_time = parse(depart_time)
-
-    update_commutes(destination,
-                    transit_mode,
-                    depart_time,
-                    batch_size,
-                    download_delay)
+    update_commutes(destinations=destination,
+                    modes=transit_mode,
+                    depart_time=depart_time,
+                    **kwargs)
 
 
 if __name__ == '__main__':
