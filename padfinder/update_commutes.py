@@ -86,24 +86,22 @@ def update_commutes(destinations,
 
     with session_scope(Session) as session:
 
-        # get posts with location information
-        posts_to_update = (session
-                           .query(ApartmentPost)
-                           .outerjoin(ApartmentPost.commutes)
-                           .filter(ApartmentPost.latitude != None,
-                                   ~ApartmentPost.commutes.any())
-                           .order_by(ApartmentPost.posted_ts.desc()))
+        posts = (session
+                 .query(ApartmentPost)
+                 .filter(ApartmentPost.latitude != None,
+                         ~ApartmentPost.commutes.any())
+                 .order_by(ApartmentPost.posted_ts.desc()))
 
-        num_updates = posts_to_update.count()
-        num_processed = 0
+        num_updates = posts.count()
 
-        for i, posts in enumerate(_grouper(posts_to_update, batch_size), 1):
-            _process_batch(session, posts, destinations, modes, depart_time)
-            num_processed += len(posts)
-            logger.info("batch {}: {}/{} commutes processed"
-                        .format(i, num_processed, num_updates))
+        for i, batch in enumerate(_grouper(posts, batch_size)):
+            _process_batch(session, batch, destinations, modes, depart_time)
+            num_processed = i * batch_size + len(batch)
+            logger.info("{}/{} commutes processed"
+                        .format(num_processed, num_updates))
             if i == max_batches:
-                logger.warn('reached max_batches=={}; stopping'.format(max_batches))
+                logger.warn('reached max_batches=={}; stopping'
+                            .format(max_batches))
                 break
             _random_pause(download_delay)
 
