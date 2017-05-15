@@ -19,4 +19,5 @@ class ApartmentPost(Item):
     latitude = Field()
     longitude = Field()
     available_date = Field()
+    body = Field()
     tag_list = Field()

@@ -66,29 +66,28 @@ class CraigSpider(scrapy.Spider):
         l.add_xpath('latitude', '//@data-latitude')
         l.add_xpath('longitude', '//@data-longitude')
         l.add_xpath('available_date', '//span[@class="housing_movein_now property_date"]/@data-date')
+        l.add_xpath('body', 'string(//section[@id="postingbody"])')
 
-        for tag in [
-            'cats are OK - purrr',
-            'dogs are OK - wooof',
-            'street parking',
-            'off-street parking'
-            'carport',
-            'attached garage',
-            'detached garage',
-            'no smoking',
-            'laundry on site',
-            'laundry in bldg',
-            'w/d in unit',
-            'apartment',
-            'condo',
-            'cottage/cabin',
-            'duplex',
-            'flat',
-            'house',
-            'in-law',
-            'loft'
-            'townhouse'
-        ]:
+        for tag in ['cats are OK - purrr',
+                    'dogs are OK - wooof',
+                    'street parking',
+                    'off-street parking'
+                    'carport',
+                    'attached garage',
+                    'detached garage',
+                    'no smoking',
+                    'laundry on site',
+                    'laundry in bldg',
+                    'w/d in unit',
+                    'apartment',
+                    'condo',
+                    'cottage/cabin',
+                    'duplex',
+                    'flat',
+                    'house',
+                    'in-law',
+                    'loft'
+                    'townhouse']:
             l.add_xpath('tag_list', '//text()[.="{}"]'.format(tag))
 
         return l.load_item()

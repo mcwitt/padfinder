@@ -13,11 +13,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 Base = declarative_base()
 
-post_tag = Table(
-    'post_tag', Base.metadata,
-    Column('post_id', BigInteger, ForeignKey('post.id')),
-    Column('tag_id', BigInteger, ForeignKey('tag.id')),
-)
+post_tag = Table('post_tag', Base.metadata,
+                 Column('post_id', BigInteger, ForeignKey('post.id')),
+                 Column('tag_id', BigInteger, ForeignKey('tag.id')))
 
 
 class ApartmentPost(Base):
@@ -39,6 +37,7 @@ class ApartmentPost(Base):
     latitude = Column(Float)
     longitude = Column(Float)
     available_date = Column(Date)
+    body = Column(String)
     tag_list = Column(String)
 
     tags = relationship('ApartmentTag', secondary=post_tag, backref='posts')
