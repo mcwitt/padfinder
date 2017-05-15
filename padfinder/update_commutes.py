@@ -91,7 +91,8 @@ def update_commutes(destinations,
                            .query(ApartmentPost)
                            .outerjoin(ApartmentPost.commutes)
                            .filter(ApartmentPost.latitude != None,
-                                   ~ApartmentPost.commutes.any()))
+                                   ~ApartmentPost.commutes.any())
+                           .order_by(ApartmentPost.posted_ts.desc()))
 
         num_updates = posts_to_update.count()
         num_processed = 0
