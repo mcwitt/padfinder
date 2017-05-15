@@ -6,6 +6,7 @@
 daemon=padfinder-crawl
 workdir="/code/padfinder/padfinder"
 prog="$workdir/crawl.sh"
+config_dir=/etc/padfinder
 lockfile=/var/lock/subsys/$daemon
 pid_file="/var/run/${daemon}.pid"
 
@@ -13,7 +14,7 @@ pid_file="/var/run/${daemon}.pid"
 start() {
     echo -n $"Starting $daemon ($prog): "
     cd $workdir
-    nohup $prog < /dev/null > /var/log/${daemon}.log 2>&1 &
+    nohup $prog $config_dir < /dev/null > /var/log/${daemon}.log 2>&1 &
     echo $! > "$pid_file"
     retval=$?
     echo

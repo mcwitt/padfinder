@@ -1,6 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-subregion=$(cat /etc/padfinder/subregion)
+set -x
+
+config_dir=$1
+subregion=$(cat "$config_dir/subregion")
 
 while true; do
     scrapy crawl craig -a subregion=$subregion

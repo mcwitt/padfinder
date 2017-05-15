@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 while true; do
     python update_commutes.py \
@@ -7,7 +7,7 @@ while true; do
            --transit-mode walking \
            --transit-mode bicycling \
            --transit-mode transit \
-	         --transit-mode driving \
+	   --transit-mode driving \
            --download-delay 10
     sleep 900
 done

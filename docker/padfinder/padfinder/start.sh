@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -x
 
@@ -8,8 +8,8 @@ echo $1 > /etc/padfinder/subregion
 /etc/init.d/padfinder-crawl start
 /etc/init.d/padfinder-commute start
 
-touch /var/log/padfinder-crawl
-touch /var/log/padfinder-commute
+touch /var/log/padfinder-crawl.log
+touch /var/log/padfinder-commute.log
 
-tail -f /var/log/padfinder-crawl \
-     -f /var/log/padfinder-commute
+tail -f /var/log/padfinder-crawl.log \
+     -f /var/log/padfinder-commute.log
