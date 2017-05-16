@@ -20,7 +20,7 @@ RUN git clone https://github.com/mcwitt/padfinder.git
 COPY padfinder/ /code/padfinder/
 
 WORKDIR /code/padfinder/
-RUN git checkout tags/v0.3
+RUN git checkout tags/v0.3.1
 RUN pip install -r requirements.txt
 
 # needed for click to work
@@ -29,4 +29,4 @@ ENV LC_ALL en_US.utf-8
 
 WORKDIR /code/padfinder/padfinder
 ENTRYPOINT ["./start.sh"]
-CMD ["sfc"]
+CMD ["sfbay", "sfc"]
