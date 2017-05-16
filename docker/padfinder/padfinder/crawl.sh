@@ -3,9 +3,9 @@
 set -x
 
 config_dir=$1
-subregion=$(cat "$config_dir/subregion")
+args=$(cat "$config_dir/args")
 
 while true; do
-    scrapy crawl craig -a subregion=$subregion
+    scrapy crawl craig $args
     sleep 60
 done

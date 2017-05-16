@@ -3,7 +3,7 @@
 set -x
 
 mkdir /etc/padfinder/
-echo $1 > /etc/padfinder/subregion
+echo $1 > /etc/padfinder/args
 
 /etc/init.d/padfinder-crawl start
 /etc/init.d/padfinder-commute start
