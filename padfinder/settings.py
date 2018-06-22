@@ -2,6 +2,6 @@ DATABASE = {
     'drivername': 'postgres',
     'host': 'localhost',
     'port': 5432,
-    'username': 'matt',
+    'username': 'padfinder',
     'database': 'padfinder'
 }
